@@ -1,0 +1,33 @@
+version: '3'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  pgdb:
+    image: postgres
+    networks:
+      - app-tier
+    container_name: pgdb
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: users
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  crudpoc:
+    container_name: crudpoc
+    image: crudpoc:1.0.1
+    networks:
+      - app-tier
+    depends_on:
+      - pgdb
+    build:
+      context: ""
+      dockerfile: Dockerfile
+    ports:
+      - 9020:9020
